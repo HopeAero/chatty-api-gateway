@@ -1,0 +1,14 @@
+{
+    "extends": ["@tsconfig/strictest/tsconfig.json"],
+    "include": ["src/drizzle/schema/index.ts"], // your schema paths here
+    "compilerOptions": {
+        "outDir": "drizzle-kit",
+
+        "removeComments": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+
+        "module": "CommonJS",
+        "moduleResolution": "Node10"
+    }
+}
