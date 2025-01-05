@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   postgres:
@@ -30,6 +30,18 @@ services:
     networks:
       - chatty
 
+  rabbitmq:
+    image: rabbitmq:4.0.5-management-alpine
+    container_name: "rabbitmq"
+    ports:
+      - 5673:5672
+      - 15673:15672
+    volumes:
+      - rabbit_data:/var/lib/rabbitmq/
+      - rabbit_data:/var/log/rabbitmq/
+    networks:
+      - chatty
+
 networks:
   chatty:
     driver: bridge
@@ -37,3 +49,4 @@ networks:
 volumes:
   db:
   pgadmin-data:
+  rabbit_data:
