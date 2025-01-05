@@ -1,14 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import * as bcryptjs from 'bcryptjs';
-import { eq } from 'drizzle-orm';
-import { DRIZZLE } from 'src/drizzle/drizzle.module';
-import { User, users } from 'src/drizzle/schema';
-import { DrizzleDB } from 'src/drizzle/types/drizzle';
+import { Inject, Injectable } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import * as bcryptjs from "bcryptjs";
+import { eq } from "drizzle-orm";
+import { DrizzleClient } from "src/drizzle/client";
+import { DRIZZLE_TOKEN } from "src/drizzle/drizzle.module";
+import { User, users } from "src/drizzle/schemas";
 
 export type JwtPayload = {
-  username: string
-}
+  username: string;
+};
 
 export class AuthenticatorError extends Error {}
 export class InvalidCredentialsError extends AuthenticatorError {}
@@ -16,7 +16,7 @@ export class InvalidCredentialsError extends AuthenticatorError {}
 @Injectable()
 export class Authenticator {
   constructor(
-    @Inject(DRIZZLE) private db: DrizzleDB,
+    @Inject(DRIZZLE_TOKEN) private db: DrizzleClient,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -29,15 +29,16 @@ export class Authenticator {
       throw new Error("The username is already being used");
     }
 
-    await this.db
-      .insert(users)
-      .values({
-        username,
-        password: await bcryptjs.hash(password, 10),
-      });
+    await this.db.insert(users).values({
+      username,
+      password: await bcryptjs.hash(password, 10),
+    });
   }
 
-  async login(username: string, password: string): Promise<{ user: User, jwt: string }> {
+  async login(
+    username: string,
+    password: string,
+  ): Promise<{ user: User; jwt: string }> {
     const [user] = await this.db
       .select()
       .from(users)
@@ -52,7 +53,7 @@ export class Authenticator {
     }
 
     const jwtPayload: JwtPayload = {
-      username
+      username,
     };
     return {
       user,
