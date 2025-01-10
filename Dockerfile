@@ -1,26 +1,13 @@
-# Base image
-FROM node:18
-
-# Create app directory
-WORKDIR /usr/src/app
-
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-COPY package*.json ./
-
-# Install app dependencies
+FROM node:18 AS project-dependencies
+WORKDIR /chatty-api-gateway/
+COPY ./package*.json ./
 RUN npm install
 
-# Bundle app source
-COPY . .
-
-# Copy the .env and .env.development files
-COPY .env .env.development ./
-
-# Creates a "dist" folder with the production build
+FROM node:18 AS built-project
+WORKDIR /chatty-api-gateway/
+COPY ./ ./
+COPY --from=project-dependencies /chatty-api-gateway/ ./
 RUN npm run build
 
-# Expose the port on which the app will run
+ENTRYPOINT ["npm", "run", "start:prod"]
 EXPOSE 3001
-
-# Start the server using the production build
-CMD ["npm", "run", "start:prod"]

@@ -1,52 +1,36 @@
-version: "3.9"
-
 services:
-  postgres:
-    image: postgres:17-alpine
-    container_name: postgres_container
+  chatty-api-gateway:
+    build:
+      context: .
+    depends_on:
+      chatty-api-gateway-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  chatty-api-gateway-db:
+    image: postgres:17
     ports:
       - 5433:5432
     restart: always
     volumes:
-      - db:/data/postgres
-    networks:
-      - chatty
+      - chatty-api-gateway-db:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_USER=admin
       - POSTGRES_DB=chatty_db
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin4_container
-    restart: always
-    ports:
-      - "8888:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-    networks:
-      - chatty
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
 
   rabbitmq:
-    image: rabbitmq:4.0.5-management-alpine
-    container_name: "rabbitmq"
+    image: rabbitmq:4.0.5-management
     ports:
       - 5673:5672
       - 15673:15672
     volumes:
-      - rabbit_data:/var/lib/rabbitmq/
-      - rabbit_data:/var/log/rabbitmq/
-    networks:
-      - chatty
-
-networks:
-  chatty:
-    driver: bridge
+      - rabbitmq:/var/lib/rabbitmq/
+      - rabbitmq:/var/log/rabbitmq/
 
 volumes:
-  db:
-  pgadmin-data:
-  rabbit_data:
+  chatty-api-gateway-db:
+  rabbitmq:
