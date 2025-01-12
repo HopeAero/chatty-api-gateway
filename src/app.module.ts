@@ -6,9 +6,10 @@ import { AuthModule } from "./auth/auth.module";
 import { JwtGuard } from "./auth/login-strategies/jwt/jwt.guard";
 import { JwtStrategy } from "./auth/login-strategies/jwt/jwt.strategy";
 import { DrizzleModule } from "./drizzle/drizzle.module";
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [AuthModule, DrizzleModule],
+  imports: [AuthModule, DrizzleModule, ChatModule],
   controllers: [AppController],
   providers: [
     AppService,
