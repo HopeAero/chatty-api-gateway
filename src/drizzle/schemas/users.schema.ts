@@ -1,8 +1,7 @@
 import { pgTable, text } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
-  username: text("username").primaryKey(),
-  password: text("password").notNull(),
+  username: text().primaryKey(),
 });
 
 export type User = typeof users.$inferSelect;

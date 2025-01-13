@@ -1,5 +1,7 @@
 services:
   chatty-api-gateway:
+    ports:
+      - 3001:3001
     build:
       context: .
     depends_on:

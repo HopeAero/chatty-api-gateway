@@ -4,6 +4,7 @@ import { envs } from "src/config";
 import { DrizzleModule } from "src/drizzle/drizzle.module";
 import { AuthRestController } from "./auth-rest.controller";
 import { Authenticator } from "./authenticator";
+import { GoogleStrategy } from "./login-strategies/google/google.strategy";
 import { JwtStrategy } from "./login-strategies/jwt/jwt.strategy";
 import { LocalStrategy } from "./login-strategies/local/local.strategy";
 
@@ -20,6 +21,6 @@ import { LocalStrategy } from "./login-strategies/local/local.strategy";
     }),
   ],
   controllers: [AuthRestController],
-  providers: [Authenticator, LocalStrategy, JwtStrategy],
+  providers: [Authenticator, LocalStrategy, JwtStrategy, GoogleStrategy],
 })
 export class AuthModule {}

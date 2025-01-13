@@ -12,6 +12,9 @@ interface EnvVars {
   RABBITMQ_DEFAULT_PASS: string;
   RABBITMQ_HOST: string;
   RABBITMQ_PORT: string;
+  GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_SECRET: string;
+  GOOGLE_CALLBACK_URL: string;
 }
 
 const envVarsSchema = Joi.object({
@@ -23,6 +26,9 @@ const envVarsSchema = Joi.object({
   RABBITMQ_DEFAULT_PASS: Joi.string().required(),
   RABBITMQ_HOST: Joi.string().required(),
   RABBITMQ_PORT: Joi.string().required(),
+  GOOGLE_CLIENT_ID: Joi.string().required(),
+  GOOGLE_CLIENT_SECRET: Joi.string().required(),
+  GOOGLE_CALLBACK_URL: Joi.string().required(),
 }).unknown(true);
 
 const { error, value: envVars } = envVarsSchema.validate(process.env, {
@@ -42,4 +48,7 @@ export const envs: EnvVars = {
   RABBITMQ_DEFAULT_PASS: process.env.RABBITMQ_DEFAULT_PASS,
   RABBITMQ_HOST: process.env.RABBITMQ_HOST,
   RABBITMQ_PORT: process.env.RABBITMQ_PORT,
+  GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+  GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
 };
