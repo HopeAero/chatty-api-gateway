@@ -2,6 +2,7 @@ import { Logger, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DateTime } from "luxon";
 import { AppModule } from "./app.module";
+import { CORS } from "./common/constants/cors";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 import { envs } from "./config";
 
@@ -13,7 +14,8 @@ async function bootstrap() {
   const logger = new Logger(appName);
 
   const app = await NestFactory.create(AppModule);
-  await app.listen(envs.PORT);
+
+  app.enableCors(CORS);
 
   app.useGlobalFilters(new HttpExceptionFilter());
 
@@ -26,6 +28,8 @@ async function bootstrap() {
       },
     }),
   );
+
+  await app.listen(envs.PORT);
 
   logger.log(`🚀  Server is running at ${await app.getUrl()}`);
   logger.log(`🚀  App Name: ${appName}`);
