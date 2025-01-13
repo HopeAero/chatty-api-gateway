@@ -37,4 +37,9 @@ export class AuthRestController {
   async getMyProfile(@User() user: UserActive) {
     return await this.authService.myProfile(user.username);
   }
+
+  @Get("users")
+  async getUsers() {
+    return await this.authService.getUsers();
+  }
 }

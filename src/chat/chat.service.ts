@@ -55,4 +55,17 @@ export class ChatService {
 
     return response;
   }
+
+  async findAllRoomGroup() {
+    const response = await lastValueFrom(
+      this.client.send("rooms_group", {}).pipe(
+        catchError((error) => {
+          const { status, message } = extractErrorDetails(error);
+          throw new HttpException(message, status);
+        }),
+      ),
+    );
+
+    return response;
+  }
 }

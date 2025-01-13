@@ -96,4 +96,15 @@ export class Authenticator {
       username: user.username,
     };
   }
+
+  async getUsers() {
+    const usersList = await this.db
+      .select({ username: users.username })
+      .from(users)
+      .execute();
+
+    console.log(usersList);
+
+    return usersList;
+  }
 }
