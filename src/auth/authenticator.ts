@@ -1,8 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { ClientProxy } from "@nestjs/microservices";
+import { eq } from "drizzle-orm";
+import { CHAT_SERVICE } from "src/config";
 import { DrizzleClient } from "src/drizzle/client";
 import { DRIZZLE_TOKEN } from "src/drizzle/drizzle.module";
-import { User } from "src/drizzle/schemas";
+import { User, users } from "src/drizzle/schemas";
 
 export type JwtPayload = {
   username: string;
@@ -16,6 +19,7 @@ export class Authenticator {
   constructor(
     @Inject(DRIZZLE_TOKEN) private db: DrizzleClient,
     private readonly jwtService: JwtService,
+    @Inject(CHAT_SERVICE) private client: ClientProxy,
   ) {}
 
   async register(
@@ -31,5 +35,31 @@ export class Authenticator {
     ) => Promise<{ user: User; jwt: string }>,
   ): Promise<{ user: User; jwt: string }> {
     return await loginFunction(this.db, this.jwtService);
+  }
+
+  async myProfile(username: string) {
+    const [user] = await this.db
+      .select()
+      .from(users)
+      .where(eq(users.username, username));
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return {
+      username: user.username,
+    };
+  }
+
+  async getUsers() {
+    const usersList = await this.db
+      .select({ username: users.username })
+      .from(users)
+      .execute();
+
+    console.log(usersList);
+
+    return usersList;
   }
 }
