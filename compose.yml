@@ -13,7 +13,7 @@ services:
   chatty-api-gateway-db:
     image: postgres:17
     ports:
-      - 5433:5432
+      - 5432:5432
     restart: always
     volumes:
       - chatty-api-gateway-db:/var/lib/postgresql/data
@@ -27,8 +27,8 @@ services:
   rabbitmq:
     image: rabbitmq:4.0.5-management
     ports:
-      - 5673:5672
-      - 15673:15672
+      - 5672:5672
+      - 15672:15672
     volumes:
       - rabbitmq:/var/lib/rabbitmq/
       - rabbitmq:/var/log/rabbitmq/
