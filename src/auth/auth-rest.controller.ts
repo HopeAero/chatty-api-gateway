@@ -1,20 +1,7 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpException,
-  Inject,
-  Post,
-  Req,
-  UseGuards,
-} from "@nestjs/common";
-import { ClientProxy } from "@nestjs/microservices";
+import { Body, Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { Request as ExpressRequest } from "express";
-import { catchError, lastValueFrom } from "rxjs";
 import { UserActive } from "src/common/interfaces/userActive.interface";
-import { CHAT_SERVICE } from "src/config";
-import { extractErrorDetails } from "src/utils/extractErrorDetails";
 import { Authenticator } from "./authenticator";
 import { LoginCredentials } from "./dtos/login-credentials";
 import { RegistrationCredentials } from "./dtos/registration-credentials";
@@ -26,28 +13,17 @@ import { User } from "./login-strategies/user.decorator";
 
 @Controller("auth-rest")
 export class AuthRestController {
-  constructor(
-    private readonly authService: Authenticator,
-    @Inject(CHAT_SERVICE) private client: ClientProxy,
-  ) {}
+  constructor(private readonly authService: Authenticator) {}
 
   @Public()
   @Post("register")
   async register(@Body() credentials: RegistrationCredentials) {
-    await this.authService.register(localAuthRegister(credentials));
-
-    const response = await lastValueFrom(
-      this.client.send("create_user", credentials).pipe(
-        catchError((error) => {
-          const { status, message } = extractErrorDetails(error);
-          console.error("Error:", error, status, message);
-          throw new HttpException(message, status);
-        }),
-      ),
+    await this.authService.register(
+      credentials.username,
+      localAuthRegister(credentials),
     );
 
     return {
-      user: response,
       message: "User created successfully",
     };
   }
@@ -57,6 +33,9 @@ export class AuthRestController {
   @Post("login")
   async login(@Body() credentials: LoginCredentials) {
     const { jwt } = await this.authService.login(localAuthLogin(credentials));
+
+    console.log("JWT:", jwt);
+
     return {
       jwt,
     };
@@ -65,7 +44,9 @@ export class AuthRestController {
   @Public()
   @Get("google")
   @UseGuards(GoogleOauthGuard)
-  async googleAuth() {}
+  async googleAuth() {
+    console.log("Google Auth");
+  }
 
   @Public()
   @Get("google/callback")
@@ -75,6 +56,7 @@ export class AuthRestController {
   ) {
     console.log("User:", req.user);
     const { jwt } = await this.authService.login(googleAuthLogin(req.user));
+
     return {
       jwt,
     };

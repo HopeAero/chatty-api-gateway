@@ -1,9 +1,13 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { HttpException, Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import { ClientProxy } from "@nestjs/microservices";
 import { eq } from "drizzle-orm";
+import { catchError, lastValueFrom } from "rxjs";
+import { CHAT_SERVICE } from "src/config";
 import { DrizzleClient } from "src/drizzle/client";
 import { DRIZZLE_TOKEN } from "src/drizzle/drizzle.module";
 import { User, users } from "src/drizzle/schemas";
+import { extractErrorDetails } from "src/utils/extractErrorDetails";
 
 export type JwtPayload = {
   username: string;
@@ -17,12 +21,27 @@ export class Authenticator {
   constructor(
     @Inject(DRIZZLE_TOKEN) private db: DrizzleClient,
     private readonly jwtService: JwtService,
+    @Inject(CHAT_SERVICE) private client: ClientProxy,
   ) {}
 
   async register(
+    username: string,
     registerFunction: (db: DrizzleClient) => Promise<void>,
   ): Promise<void> {
     await registerFunction(this.db);
+
+    const payload = {
+      username,
+    };
+
+    const response = await lastValueFrom(
+      this.client.send("create_user", payload).pipe(
+        catchError((error) => {
+          const { status, message } = extractErrorDetails(error);
+          throw new HttpException(message, status);
+        }),
+      ),
+    );
   }
 
   async login(
