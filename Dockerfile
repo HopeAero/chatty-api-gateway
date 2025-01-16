@@ -10,4 +10,4 @@ COPY --from=project-dependencies /chatty-api-gateway/ ./
 RUN npm run build
 
 ENTRYPOINT ["npm", "run", "start:prod"]
-EXPOSE 3001
+EXPOSE 3000

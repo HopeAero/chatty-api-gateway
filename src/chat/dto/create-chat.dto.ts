@@ -1,6 +1,5 @@
 import {
   ArrayNotEmpty,
-  IsArray,
   IsEnum,
   IsNotEmpty,
   IsString,
@@ -27,7 +26,6 @@ export class CreateRoomDto {
   @ValidateIf((o) => o.type)
   type: RoomType;
 
-  @IsArray({ each: true })
   @ArrayNotEmpty()
   members: MemberRequest[];
 }

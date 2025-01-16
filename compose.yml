@@ -1,7 +1,7 @@
 services:
   chatty-api-gateway:
     ports:
-      - 3001:3001
+      - 3000:3000
     build:
       context: .
     depends_on:
@@ -18,21 +18,11 @@ services:
     volumes:
       - chatty-api-gateway-db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_USER=admin
-      - POSTGRES_DB=chatty_db
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=chatty_api_gateway
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
 
-  rabbitmq:
-    image: rabbitmq:4.0.5-management
-    ports:
-      - 5672:5672
-      - 15672:15672
-    volumes:
-      - rabbitmq:/var/lib/rabbitmq/
-      - rabbitmq:/var/log/rabbitmq/
-
 volumes:
   chatty-api-gateway-db:
-  rabbitmq:
