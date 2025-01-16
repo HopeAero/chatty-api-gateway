@@ -7,8 +7,6 @@ services:
     depends_on:
       chatty-api-gateway-db:
         condition: service_healthy
-      rabbitmq:
-        condition: service_started
 
   chatty-api-gateway-db:
     image: postgres:17
