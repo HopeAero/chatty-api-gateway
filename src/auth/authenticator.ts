@@ -1,8 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { ClientProxy } from "@nestjs/microservices";
 import { eq } from "drizzle-orm";
-import { CHAT_SERVICE } from "src/config";
 import { DrizzleClient } from "src/drizzle/client";
 import { DRIZZLE_TOKEN } from "src/drizzle/drizzle.module";
 import { User, users } from "src/drizzle/schemas";
@@ -19,7 +17,6 @@ export class Authenticator {
   constructor(
     @Inject(DRIZZLE_TOKEN) private db: DrizzleClient,
     private readonly jwtService: JwtService,
-    @Inject(CHAT_SERVICE) private client: ClientProxy,
   ) {}
 
   async register(
