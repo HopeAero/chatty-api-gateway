@@ -8,6 +8,7 @@ WORKDIR /chatty-api-gateway/
 COPY ./ ./
 COPY --from=project-dependencies /chatty-api-gateway/ ./
 RUN npm run build
+RUN npx drizzle-kit migrate
 
 ENTRYPOINT ["npm", "run", "start:prod"]
 EXPOSE 3000
